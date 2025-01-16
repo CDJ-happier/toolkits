@@ -6,7 +6,7 @@
 
 ```python
 if __name__ == '__main__':
-    # 填充你自己的参数
+    # 填充你自己的参数！！！
     login_config = {
         "user_id": "22721284",
         "user_index": "xxx",
@@ -72,13 +72,11 @@ schtasks /delete /tn "auto_login_shu"
 
 ### Linux解决方案 - crontab 定时任务
 
-Note：未测试
-
 使用`crontab -e`编辑定时任务表，并添加定时任务：
 
 ![image-20250105144555552](imgassets/auto_login_shu/image-20250105144555552.png)
 
-上面的cron表达式`10 * * * *`表示10min整的时候执行后面的命令，用**绝对路径**。
+上面的cron表达式`10 * * * *`表示10min整（如9:10, 10:10, 11:10）的时候执行后面的命令，用**绝对路径**。可以修改为`*/20 * * * *`，表示每隔20min执行一次。
 
 不了解crontab的直接gpt。
 
