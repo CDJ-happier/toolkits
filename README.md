@@ -12,7 +12,7 @@
 
 python文件：[pdf_tool.py](./pdf_tool.py)
 
-拆分为奇数和偶数页：`split_pdf_odd_even`
+**拆分为奇数和偶数页**：`split_pdf_odd_even`
 
 ```shell
 python pdf_tool.py --operation_type split --input_pdf_path E:\\shu\\xxx.pdf --start_page 2 --end_page 8
@@ -21,7 +21,7 @@ python pdf_tool.py --operation_type split --input_pdf_path E:\\shu\\xxx.pdf --st
 * operation_type: split表示拆分为奇数和偶数2个pdf，start_page和end_page表示拆分的起止页，不是从0开始。
 * 默认保存为xxx_even.pdf, xxx_odd.pdf，目录同源文件。
 
-提取指定页：`extract_pdf_pages`
+**提取指定页**：`extract_pdf_pages`，每页单独生成一个pdf文件
 
 ```shell
 python pdf_tool.py --operation_type extract --input_pdf_path E:\\shu\\xxx.pdf --extract_pages_number 1,3,9
@@ -29,6 +29,15 @@ python pdf_tool.py --operation_type extract --input_pdf_path E:\\shu\\xxx.pdf --
 
 * operation_type: extract表示提取指定页数
 * 默认保存为xxx_1.pdf, xxx_3.pdf，目录同源文件。
+
+提取指定页：`extract_pdf_pages`，最终生成一个pdf文件
+
+```python
+python pdf_tool.py --operation_type extract --input_pdf_path E:\\shu\\xxx.pdf --start_page 2 --end_page 10
+```
+
+* operation_type: extract表示提取指定页数
+* 将2到10的page提取并合成一个pdf文件。start_page不指定默认为1，end_page默认为最后一页，二者至少指定一个。
 
 
 
