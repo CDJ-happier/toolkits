@@ -289,9 +289,9 @@ class AutoLoginUtil:
 if __name__ == '__main__':
     # 填充你自己的参数
     login_config = {
-        "user_id": "22721284",
+        "user_id": "xxx",  # 学号
         "user_index": "xxx",
-        "password": "xxx",
+        "password": "xxx",  # 在cookie的某个字段中
         "cookie": "xxx",
         "query_string": "xxx",
     }
@@ -305,10 +305,10 @@ if __name__ == '__main__':
     if ProxyUtil.is_proxy_enabled() is True:
         ProxyUtil.set_proxy(enable=False)
 
-    max_try, time_interval = 10, 5
+    max_try, time_interval = 2, 10
     for i in range(max_try):
         if alu.login() is True:
             logger.info("登录成功！")
             break
         logger.error("第{}次尝试登录失败，{}s后重试...".format(i + 1, time_interval))
-        time.sleep(5)
+        time.sleep(time_interval)
