@@ -1,0 +1,34 @@
+{
+    // 将指定搜索目录下由files_to_copy指定的文件及其迁移规则复制到latext工程目录
+    // 迁移规则是: key为latext_pic_dir子目录, value是一个文件列表
+    "latex_pic_dir": "D:/code/gh_cdj/master-thesis/figures",
+    "files_to_copy": {
+	    "chap01": [
+	        "lf_recon_schema.pdf",
+	        "methods_by_date_and_result.pdf",
+	    ],
+	    "chap02": [
+	        "lf_double_plane.pdf",
+	        "lf_macpi_schema.pdf",
+	        "lf_sai_epi_schema.pdf",
+	    ],
+	    "chap03": [
+	        "occlusion_analysis.pdf",
+	        "occlusion_effect_of_warp.pdf",
+	        "overview_of_DispEhcASR.pdf",
+	        "ppline_DispEhcASR_est.pdf",
+	        "ppline_DispEhcASR_overall.pdf",
+	        "ppline_DispEhcASR_refine.pdf",
+	        "ppline_DispEhcASR_ehc.pdf",
+	        "visualization_of_SOTA.pdf",
+	        "visualization_of_warp_result.pdf",
+	    ],
+	    "chap04": [
+	        "overview_of_CG2ASR.pdf",
+	        "overview_of_CG2ASR_CGaCG.pdf",
+	        "overview_of_CG2ASR_HFF.pdf",
+	        "overview_of_CG2ASR_refine.pdf",
+	    ],
+	    ".": []  // LATEX_PIC_DIR根目录下的文件
+	}
+}
