@@ -97,4 +97,4 @@ graph LR
 
 使用文档见[drawio-automation/README](drawio-automation/README.md).
 
-但是突然发现，drawio桌面版支持直接导出为pdf，因此上面的流程有点繁琐，将在下一版精简，直接通过drawio CLI完成导出为pdf并裁剪。
+但是突然发现，drawio桌面版支持直接导出为pdf，因此上面的流程有点繁琐。直接通过drawio CLI完成导出为pdf并裁剪。
