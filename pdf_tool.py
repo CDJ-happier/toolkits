@@ -9,11 +9,11 @@ def get_args():
     parser.add_argument("--input_pdf_path", type=str, default="example.pdf", help="Input PDF file path")
     parser.add_argument("--operation_type", type=str, default=None,
                         help="operation type, split (into odd and even pages) or extract(e.g., 1,3,9)")
+    parser.add_argument("--start_page", type=int, default=1, help="start page no")
+    parser.add_argument("--end_page", type=int, default=None, help="end page no")
     # for split pdf into two pdf files
     parser.add_argument("--odd_pages_name", type=str, default=None, help="Output PDF file name for odd pages")
     parser.add_argument("--even_pages_name", type=str, default=None, help="Output PDF file name for even pages")
-    parser.add_argument("--start_page", type=int, default=1, help="start page no")
-    parser.add_argument("--end_page", type=int, default=None, help="end page no")
     # for extract pages from pdf file
     parser.add_argument("--extract_pages_number", type=str, default=None,
                         help="Output PDF file name for extracted pages, e.g., 1,3,5")
@@ -61,24 +61,45 @@ def split_pdf_odd_even(args):
 def extract_pdf_pages(args):
     r"""
     extract pdf pages from args.extract_pages_number.
+    example 1:
+        extract pdf pages into single pdf file according to extract_pages_number, which is a string formatted in 1,3,8
+        cmd: python pdf_tool.py input_file extract 1,3,4,8,9
+    example 2:
+        extract pdf pages from start_page to end_page and merge into one pdf file, the filename is xxx_page{s}-{e}.pdf
+        cmd: python pdf_tool.py input_file extract --start_page 3 --end_page 21
     """
     assert args.input_pdf_path, "input_pdf_path is required."
-    assert args.extract_pages_number, "extract_pages_number is required."
+    assert args.extract_pages_number or args.start_page or args.end_page,\
+        "extract_pages_number or start_page or end_page is required."
     reader = PdfReader(args.input_pdf_path)
     base_dir = os.path.dirname(args.input_pdf_path)
     basename = os.path.basename(args.input_pdf_path)[:-4]
-    no_list = args.extract_pages_number.split(",")
-    for no in no_list:
-        no = int(no)
-        if no > len(reader.pages):
-            raise ValueError(f"page number {no} is out of range, max page number is {len(reader.pages)}")
-        cur_page = reader.get_page(no - 1)
-        cur_page_output = os.path.join(base_dir, f"{basename}_{no}.pdf")
+    if args.extract_pages_number:
+        no_list = args.extract_pages_number.split(",")
+        for no in no_list:
+            no = int(no)
+            if no > len(reader.pages):
+                raise ValueError(f"page number {no} is out of range, max page number is {len(reader.pages)}")
+            cur_page = reader.get_page(no - 1)
+            cur_page_output = os.path.join(base_dir, f"{basename}_{no}.pdf")
+            writer = PdfWriter()
+            writer.add_page(cur_page)
+            with open(cur_page_output, "wb") as cur_page_file:
+                writer.write(cur_page_file)
+            print(f"extract page {basename} No. {no} done# saved to >>> {cur_page_output}")
+    elif args.start_page or args.end_page:
+        if not args.start_page:
+            args.start_page = 1
+        if not args.end_page:
+            args.end_page = len(reader.pages) + 1
         writer = PdfWriter()
-        writer.add_page(cur_page)
+        for cur_no in range(args.start_page, args.end_page):
+            cur_page = reader.get_page(cur_no - 1)
+            writer.add_page(cur_page)
+        cur_page_output = os.path.join(base_dir, f"{basename}_page{args.start_page}-{args.end_page}.pdf")
         with open(cur_page_output, "wb") as cur_page_file:
             writer.write(cur_page_file)
-        print(f"extract page {basename} No. {no} done# saved to >>> {cur_page_output}")
+        print(f"extract page {basename} No. {args.start_page}-{args.end_page} done# saved to >>> {cur_page_output}")
 
 
 if __name__ == '__main__':
