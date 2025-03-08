@@ -11,6 +11,10 @@ try:
         config = json.load(f)
     LATEX_PIC_DIR = config["latex_pic_dir"]
     files_to_copy = config["files_to_copy"]
+    # print("Reading config_drawio_migration.json for migration function ...")
+    # print("Target Migration Dir: ", LATEX_PIC_DIR)
+    # print("Migration Files and Target SubDir:")
+    # print(files_to_copy)
 except FileNotFoundError:
     LATEX_PIC_DIR = ""
     files_to_copy = []
@@ -339,7 +343,7 @@ def process_folder(input_dir, output_dir="", keep_structure=False, git_changes=F
         处理文件夹下的所有 .drawio 文件。
     """
     if DEBUG:
-        print("\n\033[32mExporting drawio file under a directory...\033[0m")  # 绿色文本
+        print(f"\n\033[32mExporting drawio file under {input_dir} to {output_dir} with keep_structure={keep_structure}, export_types={export_types} using git={git_changes}...\033[0m")  # 绿色文本
     if git_changes:
         # 只处理 Git 检测到的变更文件
         modified_files = get_modified_files(input_dir, ["drawio"])
@@ -447,8 +451,10 @@ def migrate_folder_to_latex_project(src_folder, latex_folder, file_extensions):
             else:
                 files_missing.append(file_name)
     if len(files_missing):
+        for file_name in files_missing:
+            print(f"{file_name} not found in files_to_copy. Migration failed!")
         print(f"Warning: {len(files_missing)} files not found in files_to_copy. Migration failed!")
-        
+
 
 def migrate_file_to_latex_project(file_path, latex_folder):
     """
@@ -493,7 +499,7 @@ def main():
     EXPORT_JPG_QUALITY = args.quality_jpg
 
     # 确定输出路径
-    output_dir = args.output_path if args.output_path else os.path.dirname(args.input_path)
+    output_dir = args.output_path if args.output_path else os.path.dirname(os.path.abspath(args.input_path))
 
     # 处理单个文件
     if os.path.isfile(args.input_path) and args.input_path.endswith(".drawio"):
@@ -501,7 +507,7 @@ def main():
                                      os.path.dirname(args.input_path), args.export_types)
         if args.migration:
             pdf_file_path = file_basename + ".pdf"
-            migrate_to_latex_project(output_dir, LATEX_PIC_DIR, migration_mode="single", file_path=pdf_file_path)
+            migrate_to_latex_project("", LATEX_PIC_DIR, migration_mode="single", file_path=pdf_file_path)
     # 处理文件夹
     elif os.path.isdir(args.input_path):
         process_folder(args.input_path, output_dir, args.keep_structure, args.git_changes, args.export_types)
