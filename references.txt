@@ -1,0 +1,4 @@
+The Plenoptic Function and the Elements of Early Vision
+Light field rendering
+The lumigraph
+Light Field Image Processing: An Overview
