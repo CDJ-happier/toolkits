@@ -343,16 +343,21 @@ def process_folder(input_dir, output_dir="", keep_structure=False, git_changes=F
         处理文件夹下的所有 .drawio 文件。
     """
     if DEBUG:
-        print(f"\n\033[32mExporting drawio file under {input_dir} to {output_dir} with keep_structure={keep_structure}, export_types={export_types} using git={git_changes}...\033[0m")  # 绿色文本
+        print(f"\n\033[32mExporting drawio file under {input_dir} to {output_dir} with keep_structure={keep_structure}, export_types={export_types} using git={git_changes} ...\033[0m")  # 绿色文本
+    processed_files = []
     if git_changes:
         # 只处理 Git 检测到的变更文件
         modified_files = get_modified_files(input_dir, ["drawio"])
         if len(modified_files) == 0:
             print("No modified drawio files found.")
-            return
+        if DEBUG:
+            print(f"modified files under folder <{input_dir}> detected by git are:")
+            for mf in modified_files:
+                print(mf)
         for file in modified_files:
             drawio_file = os.path.join(input_dir, file)
             process_file(drawio_file, output_dir, keep_structure, input_dir, export_types)
+            processed_files.append(drawio_file)
     else:
         # 处理所有 .drawio 文件
         for root, dirs, files in os.walk(input_dir):
@@ -360,6 +365,9 @@ def process_folder(input_dir, output_dir="", keep_structure=False, git_changes=F
                 if file.endswith(".drawio"):
                     drawio_file = os.path.join(root, file)
                     process_file(drawio_file, output_dir, keep_structure, input_dir, export_types)
+                    processed_files.append(drawio_file)
+
+    return processed_files
 
 
 def get_modified_files(directory, file_extension=None):
@@ -393,7 +401,16 @@ def get_modified_files(directory, file_extension=None):
             status, file_path = line[:2].strip(), line[3:].strip()
             file_ext = file_path.split(".")[-1] if "." in file_path else ""
             if status in {"M", "A"} and file_ext in file_extension:
-                modified_files.append(file_path)
+                # 解决Git对大小写不敏感的情况，导致重命名文件后不能识别，如Ehc -> ehc
+                # 检查文件的实际大小写
+                if os.path.exists(file_path):
+                    modified_files.append(file_path)
+                else:
+                    # 尝试匹配大小写不敏感的文件名
+                    for f in os.listdir(os.path.dirname(file_path) or '.'):
+                        if f.lower() == file_path.lower():
+                            modified_files.append(f)
+                            break
 
         return modified_files
 
@@ -477,20 +494,6 @@ def migrate_file_to_latex_project(file_path, latex_folder):
     print(f"Warning: File '{filename}' not found in files_to_copy. Migration failed!")
 
 
-def migrate_to_latex_project(src_dir, latex_folder, migration_mode="single", file_path=None):
-    """
-    根据迁移模式将文件迁移到 LaTeX 项目目录。
-    """
-    if DEBUG:
-        print("\n\033[32mMigrating files to LaTeX project...\033[0m")  # 绿色文本
-    if migration_mode == "single" and file_path:
-        migrate_file_to_latex_project(file_path, latex_folder)
-    elif migration_mode == "batch":
-        migrate_folder_to_latex_project(src_dir, latex_folder, file_extensions=["pdf", "png", "jpg"])
-    else:
-        print("Error: Invalid migration mode or file path.")
-
-
 def main():
     args = parse_args()
     global DEBUG, EXPORT_JPG_QUALITY
@@ -498,21 +501,37 @@ def main():
         DEBUG = True
     EXPORT_JPG_QUALITY = args.quality_jpg
 
-    # 确定输出路径
-    output_dir = args.output_path if args.output_path else os.path.dirname(os.path.abspath(args.input_path))
-
     # 处理单个文件
     if os.path.isfile(args.input_path) and args.input_path.endswith(".drawio"):
+        # 确定输出路径
+        output_dir = args.output_path if args.output_path else os.path.dirname(os.path.abspath(args.input_path))
         file_basename = process_file(args.input_path, output_dir, args.keep_structure,
                                      os.path.dirname(args.input_path), args.export_types)
         if args.migration:
-            pdf_file_path = file_basename + ".pdf"
-            migrate_to_latex_project("", LATEX_PIC_DIR, migration_mode="single", file_path=pdf_file_path)
+            if DEBUG:
+                print("\n\033[32mMigrating files to LaTeX project...\033[0m")  # 绿色文本
+            for ext in args.export_types:
+                file_path = file_basename + f".{ext}"
+                migrate_file_to_latex_project(file_path, LATEX_PIC_DIR)
     # 处理文件夹
     elif os.path.isdir(args.input_path):
-        process_folder(args.input_path, output_dir, args.keep_structure, args.git_changes, args.export_types)
+        output_dir = args.output_path if args.output_path else args.input_path
+        processed_files = process_folder(args.input_path, output_dir, args.keep_structure, args.git_changes, args.export_types)
+        if len(processed_files) == 0:
+            if DEBUG:
+                print("\n\033[31mNo files processed. Exiting...\033[0m")  # 红色文本
+            return
         if args.migration:
-            migrate_to_latex_project(output_dir, LATEX_PIC_DIR, migration_mode="batch")
+            if DEBUG:
+                print("\n\033[32mMigrating files to LaTeX project...\033[0m")  # 绿色文本
+            if not args.git_changes:
+                migrate_folder_to_latex_project(output_dir, LATEX_PIC_DIR, file_extensions=["pdf", "png", "jpg"])
+                return
+            # args.git_changes is True
+            for ext in args.export_types:
+                for file_path in processed_files:
+                    file_path = file_path.replace("drawio", ext)  # drawio -> pdf/jpe/etc
+                    migrate_file_to_latex_project(file_path, LATEX_PIC_DIR)
     else:
         print(f"Error: Invalid input path: {args.input_path}")
 

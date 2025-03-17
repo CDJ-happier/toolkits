@@ -1,14 +1,18 @@
 {
-    "latex_pic_dir": "E:/code/gh_cdj/master-thesis/figures",
+    "latex_pic_dir": "d:/code/gh_cdj/master-thesis/figures",
     "files_to_copy": {
         "chap01": [
             "lf_recon_schema.pdf",
-            "methods_by_date_and_result.pdf"
+            "methods_by_date_and_result.pdf",
+            "lf_dip.pdf",
+            "lf_ddp.pdf"
         ],
         "chap02": [
             "lf_double_plane.pdf",
             "lf_macpi_schema.pdf",
-            "lf_sai_epi_schema.pdf"
+            "lf_macpi_schema.jpg",
+            "lf_sai_epi_schema.pdf",
+            "lf_sai_epi_schema.jpg"
         ],
         "chap03": [
             "occlusion_analysis.pdf",
@@ -19,12 +23,16 @@
             "ppline_DispEhcASR_refine.pdf",
             "ppline_DispEhcASR_ehc.pdf",
             "visualization_of_SOTA.pdf",
-            "visualization_of_warp_result.pdf"
+            "visualization_of_SOTA.jpg",
+            "visualization_of_warp_result.pdf",
+            "visualization_of_warp_result.jpg",
+            "texture_comparison.pdf",
+            "texture_comparison.png"
         ],
         "chap04": [
             "overview_of_CG2ASR.pdf",
-            "overview_of_CG2ASR_CGaCG.pdf",
-            "overview_of_CG2ASR_HFF.pdf",
+            "overview_of_CG2ASR_GCAS.pdf",
+            "overview_of_CG2ASR_MDFF.pdf",
             "overview_of_CG2ASR_refine.pdf"
         ],
         ".": []
