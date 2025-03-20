@@ -98,3 +98,11 @@ graph LR
 使用文档见[drawio-automation/README](drawio-automation/README.md).
 
 但是突然发现，drawio桌面版支持直接导出为pdf，因此上面的流程有点繁琐。直接通过drawio CLI完成导出为pdf并裁剪。
+
+## 简易文件服务
+
+在局域网内通过浏览器下载或浏览文件，如pdf、png、jpg、md等。
+
+python文件：[./easy_file_server/file_server.py](./easy_file_server/file_server.py).
+
+使用说明见文档[here](./easy_file_server/README.md).
